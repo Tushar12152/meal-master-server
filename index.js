@@ -2,6 +2,7 @@ const express = require('express');
 const app = express()
 const cors = require('cors');
 require('dotenv').config();
+const stripe=require('stripe')(process.env.STRIPE_SECRET_KEY)
 const port = process.env.PORT || 5000;
 
 
@@ -30,9 +31,23 @@ async function run() {
 
     const usersCollection = client.db("MealMasterDb").collection("users");
     const mealCollection = client.db("MealMasterDb").collection("meals");
+    const packagesCollection = client.db("MealMasterDb").collection("packages");
     
 
 
+    //get packages from db
+    app.get('/packages',async(req,res)=>{
+         const result=await packagesCollection.find().toArray()
+         res.send(result)
+    })
+
+    app.get('/packages/:packageName',async(req,res)=>{
+          const packageName=req.params.packageName;
+          // console.log(packageName);
+          const result=await packagesCollection.findOne({packageName:packageName})
+          res.send(result)
+
+    })
 
 
 
@@ -76,6 +91,22 @@ async function run() {
      })
 
 
+     //payment intent
+
+     app.post('/create_payment-intent',async(req,res)=>{
+         const {price}=req.body;
+         const amount=parseInt(price*100)
+
+         const paymentIntent=await stripe.paymentIntents.create({
+             amount:amount,
+             currency:'usd',
+             payment_method_types:['card']
+         })
+
+         res.send({
+          clientSecret:paymentIntent.client_secret
+         })
+     })
 
 
 
