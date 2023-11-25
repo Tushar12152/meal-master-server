@@ -29,6 +29,7 @@ async function run() {
     // await client.connect();
 
     const usersCollection = client.db("MealMasterDb").collection("users");
+    const mealCollection = client.db("MealMasterDb").collection("meals");
     
 
 
@@ -50,6 +51,24 @@ async function run() {
            const result= await usersCollection.findOne(query)
            res.send(result)
      })
+
+
+     //meals collections
+     app.post('/meals',async(req,res)=>{
+            const meal=req.body;
+            // console.log(meal);
+            const result= await mealCollection.insertOne(meal)
+            res.send(result)
+     })
+
+
+     app.get('/meals',async(req,res)=>{
+         const result=await mealCollection.find().toArray()
+         res.send(result)
+     })
+
+
+
 
 
 
