@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express')
 const app = express()
 const cors = require('cors');
 require('dotenv').config();
@@ -32,6 +32,8 @@ async function run() {
     const usersCollection = client.db("MealMasterDb").collection("users");
     const mealCollection = client.db("MealMasterDb").collection("meals");
     const packagesCollection = client.db("MealMasterDb").collection("packages");
+    const paymentsCollection = client.db("MealMasterDb").collection("payments");
+    const requestsCollection = client.db("MealMasterDb").collection("requests");
     
 
 
@@ -110,7 +112,24 @@ async function run() {
 
 
 
+     app.post('/payments',async(req,res)=>{
+          const payment=req.body;
+          console.log(payment);
+          const result=await paymentsCollection.insertOne(payment)
+          res.send(result)
+     })
 
+
+
+
+     //request collection
+
+     app.post('/requests',async(req,res)=>{
+          const request=req.body;
+          // console.log(request);
+          const result= await requestsCollection.insertOne(request)
+          res.send(result)
+     })
 
 
 
