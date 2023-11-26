@@ -132,6 +132,11 @@ async function run() {
      })
 
 
+     app.get('/request',async (req,res)=>{
+         const result= await requestsCollection.find().toArray()
+         res.send(result)
+     })
+
 
 
 
