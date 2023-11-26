@@ -34,7 +34,51 @@ async function run() {
     const packagesCollection = client.db("MealMasterDb").collection("packages");
     const paymentsCollection = client.db("MealMasterDb").collection("payments");
     const requestsCollection = client.db("MealMasterDb").collection("requests");
+    const likesCollection = client.db("MealMasterDb").collection("likes");
+    const reviewsCollection = client.db("MealMasterDb").collection("reviews");
     
+
+
+
+
+
+
+    //reviews collection
+     app.post('/reviews',async(req,res)=>{
+          const review=req.body
+          // console.log(review);
+          const result=await reviewsCollection.insertOne(review)
+          res.send(result)
+     })
+
+
+     app.get('/reviews',async(req,res)=>{
+          const result= await reviewsCollection.find().toArray()
+          res.send(result)
+     })
+
+     app.delete('/reviews/:id',async(req,res)=>{
+          const id=req.params.id;
+          const result=await reviewsCollection.deleteOne({_id:new ObjectId(id)})
+          res.send(result)
+     })
+
+
+
+    //likes Collection
+    app.post('/likes',async (req,res)=>{
+         const likes=req.body;
+        //  console.log(likes);
+        const result= await likesCollection.insertOne(likes)
+        res.send(result)
+
+    })
+
+    app.get('/likes',async (req,res)=>{
+         const result =await likesCollection.find().toArray()
+         res.send(result)
+    })
+
 
 
     //get packages from db
@@ -67,6 +111,12 @@ async function run() {
            const query={email:email}
            const result= await usersCollection.findOne(query)
            res.send(result)
+     })
+
+
+     app.get('/users',async(req,res)=>{
+         const result= await usersCollection.find().toArray()
+         res.send(result)
      })
 
 
