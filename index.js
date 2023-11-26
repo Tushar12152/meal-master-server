@@ -132,9 +132,17 @@ async function run() {
      })
 
 
-     app.get('/request',async (req,res)=>{
+     app.get('/requests',async (req,res)=>{
          const result= await requestsCollection.find().toArray()
          res.send(result)
+     })
+
+     app.delete('/requests/:id',async(req,res)=>{
+          const id=req.params.id;
+          const query={_id:new ObjectId(id)}
+          const result=await requestsCollection.deleteOne(query)
+          res.send(result)
+
      })
 
 
