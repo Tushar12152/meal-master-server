@@ -63,6 +63,32 @@ async function run() {
           res.send(result)
      })
 
+   app.get('/reviews/:id',async(req,res)=>{
+        const id=req.params.id;
+        console.log(id);
+        const result= await  reviewsCollection.findOne({_id:new ObjectId(id)})
+        res.send(result)
+   })
+
+   app.patch('/reviews/:id',async(req,res)=>{
+        const id=req.params.id;
+        const filter={_id:new ObjectId(id)}
+        const options = { upsert: true };
+     // console.log(id);
+        const updatedReview=req.body;
+     //    console.log(updatedReview.review);
+        const updatedDoc={
+           $set:{
+
+               review:updatedReview.review
+           }
+        }
+
+        const result=await reviewsCollection.updateOne(filter,updatedDoc,options)
+        res.send(result)
+   })
+
+
 
 
     //likes Collection
