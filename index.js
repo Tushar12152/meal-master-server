@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors');
+const jwt=require('jsonwebtoken')
 require('dotenv').config();
 const stripe=require('stripe')(process.env.STRIPE_SECRET_KEY)
 const port = process.env.PORT || 5000;
@@ -41,7 +42,34 @@ async function run() {
     
 
 
+      //jwt Api's
 
+      app.post('/jwt',async(req,res)=>{
+          const user=req.body
+          const token=jwt.sign(user,process.env.Access_Token,{expiresIn:'1h'})
+          res.send({token})
+      })
+
+
+      //middleWare
+
+      const verifyToken=(req,res,next)=>{
+        console.log('verfy hitted');
+        if(!req.headers.authorization) {
+             return res.status(401).send({message:'forbidden access'})
+        }
+
+        const token=req.headers.authorization.split(' ')[1];
+        jwt.verify(token,process.env.Access_Token,(err,decoded)=>{
+             if(err){
+                return res.status(401).send({message:'forbidden access'})
+             }
+             req.decoded=decoded;
+             next()
+        })
+
+
+      }
 
 
 
@@ -389,8 +417,8 @@ async function run() {
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
