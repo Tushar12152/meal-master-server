@@ -36,6 +36,8 @@ async function run() {
     const requestsCollection = client.db("MealMasterDb").collection("requests");
     const likesCollection = client.db("MealMasterDb").collection("likes");
     const reviewsCollection = client.db("MealMasterDb").collection("reviews");
+    const upcomingMealsCollection = client.db("MealMasterDb").collection("upcomingMeals");
+    const upcomingLikesCollection = client.db("MealMasterDb").collection("upcomingLikes");
     
 
 
@@ -89,6 +91,12 @@ async function run() {
    })
 
 
+
+   app.delete('/reviews/:id',async(req,res)=>{
+        const id =req.params.id;
+        const result=await reviewsCollection.deleteOne({_id:new ObjectId(id)})
+        res.send(result)
+   })
 
 
     //likes Collection
@@ -145,6 +153,47 @@ async function run() {
          res.send(result)
      })
 
+     app.patch('/users/admin/:id',async(req,res)=>{
+         const id=req.params.id;
+     //     console.log(id);
+         const filter={_id:new ObjectId(id)}
+         const role=req.body;
+     //     console.log(role.Role);
+
+
+         const updatedDoc={
+             $set:{
+                Role: role?.Role
+             }
+         }
+
+         const result=await usersCollection.updateOne(filter,updatedDoc)
+         res.send(result)
+           
+     })
+
+     app.patch('/users/:id',async(req,res)=>{
+      const id=req.params.id;
+  //     console.log(id);
+      const filter={_id:new ObjectId(id)}
+      const badge=req.body;
+      // console.log(badge?.packageName);
+
+
+      const updatedDoc={
+          $set:{
+            Badge:badge?.packageName
+          }
+      }
+
+      const result=await usersCollection.updateOne(filter,updatedDoc)
+      res.send(result)
+        
+  })
+
+
+
+
 
      //meals collections
      app.post('/meals',async(req,res)=>{
@@ -169,6 +218,46 @@ async function run() {
      })
 
 
+
+     app.delete('/meals/:id',async(req,res)=>{
+             const id=req.params.id;
+             const result=await mealCollection.deleteOne({_id:new ObjectId(id)})
+             res.send(result)
+     })
+
+
+     app.patch('/meals/:id',async(req,res)=>{
+          const id=req.params.id;
+          // console.log(id);
+          const filter={_id:new ObjectId(id)}
+          const options = { upsert: true };
+          const meal=req.body;
+          // console.log(meal);
+ 
+
+ 
+          const updatedDoc={
+              $set:{
+               Title:meal. Title,
+               ingredients:meal. ingredients,
+               description:meal.description,
+               price:meal.price,
+               rating:meal.rating,
+               date:meal.date,
+               Category:meal.Category,
+              }
+          }
+
+ 
+          const result=await mealCollection.updateOne(filter,updatedDoc,options)
+          res.send(result)
+            
+      })
+
+
+
+
+
      //payment intent
 
      app.post('/create_payment-intent',async(req,res)=>{
@@ -190,7 +279,7 @@ async function run() {
 
      app.post('/payments',async(req,res)=>{
           const payment=req.body;
-          console.log(payment);
+          // console.log(payment);
           const result=await paymentsCollection.insertOne(payment)
           res.send(result)
      })
@@ -220,6 +309,81 @@ async function run() {
           res.send(result)
 
      })
+
+
+
+     app.patch('/requests/:id',async(req,res)=>{
+          const id=req.params.id;
+          // console.log(id);
+          const filter={_id:new ObjectId(id)}
+          const status=req.body;
+          // console.log(status.status);
+ 
+ 
+          const updatedDoc={
+              $set:{
+                 
+                    status: status?.status
+              }
+          }
+ 
+          const result=await requestsCollection.updateOne(filter,updatedDoc)
+          res.send(result)
+            
+      })
+ 
+
+
+
+      //upcoming meals
+
+
+      app.post('/upcoming-meals',async(req,res)=>{
+           const upcoming=req.body;
+          //  console.log(upcoming);
+           const result= await upcomingMealsCollection.insertOne(upcoming);
+           res.send(result)
+      })
+
+
+      app.get('/upcoming-meals',async(req,res)=>{
+           const result=await upcomingMealsCollection.find().toArray()
+           res.send(result)
+      })
+
+      app.delete('/upcoming-meals/:id',async(req,res)=>{
+             const id=req.params.id;
+             const result=await upcomingMealsCollection.deleteOne({_id:new ObjectId(id)})
+             res.send(result)
+      })
+
+
+
+
+
+
+
+      //upcoming likes
+
+      app.post('/upcoming-likes',async(req,res)=>{
+           const info=req.body
+          //  console.log(info);
+           const result=await upcomingLikesCollection.insertOne(info)
+           res.send(result)
+      })
+
+      app.get('/upcoming-likes',async (req,res)=>{
+            const result= await upcomingLikesCollection.find().toArray()
+            res.send(result)
+      })
+
+
+
+
+
+
+
+ 
 
 
 
