@@ -385,7 +385,26 @@ async function run() {
              res.send(result)
       })
 
-
+      app.patch('/upcoming-meals/:id',async(req,res)=>{
+          const id=req.params.id;
+          // console.log(id);
+          const filter={_id:new ObjectId(id)}
+          const like=req.body;
+          // console.log(like.totalLike);
+ 
+ 
+          const updatedDoc={
+              $set:{
+                 
+                   
+                    likes:like.totalLike
+              }
+          }
+ 
+          const result=await upcomingMealsCollection.updateOne(filter,updatedDoc)
+          res.send(result)
+            
+      })
 
 
 
